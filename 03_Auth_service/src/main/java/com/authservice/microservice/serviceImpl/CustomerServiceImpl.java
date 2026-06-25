@@ -29,6 +29,7 @@ import com.authservice.microservice.repository.CustomerRepo;
 import com.authservice.microservice.repository.RoleRepo;
 import com.authservice.microservice.service.CustomerService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,15 +49,15 @@ public class CustomerServiceImpl implements CustomerService {
 	private final AuthenticationManager authenticationManager;
 
 	@Override
-	public Customer saveCustomer(CustomerRegisterInfoDto customerDto, Integer roleid) {
+	public CustomerInfoDto saveCustomer(CustomerRegisterInfoDto customerDto,String  role) {
 
 		Customer customer = customerMapper.convertIntoEntity(customerDto);
 
 		Set<Role> roles = customer.getRoles();
 
-		Role role = repo.findById(roleid).get();
+		 Role role2 = repo.getRole(role);
 
-		roles.add(role);
+		roles.add(role2);
 
 		customer.setRoles(roles);
 		String pwd = customer.getPwd();
@@ -68,8 +69,14 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new AuthServiceExecption("Email already exist", HttpStatus.CONFLICT, "409");
 		}
 		Customer customer2 = customerRepo.save(customer);
+		
+		CustomerInfoDto customerInfoDto= new CustomerInfoDto();
+		customerInfoDto.setEmail(customer2.getEmail());
+		customerInfoDto.setName(customer2.getName());
+		customerInfoDto.setRoles(customer2.getRoles());
+		
 
-		return customer2;
+		return customerInfoDto;
 	}
 
 	@Override

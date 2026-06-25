@@ -26,8 +26,6 @@ public class Role {
 	@Column(unique = true)
 	String  role;
 	
-	
-	
 	@ManyToMany(mappedBy = "roles")
 	@JsonIgnore
 	Set<Customer> customers=new HashSet<>();

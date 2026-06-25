@@ -1,6 +1,5 @@
 package com.authservice.microservice.config;
 
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.context.annotation.Bean;
@@ -23,74 +22,53 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AppSecurityConfig {
 
-    
-    private final UserDetailsServiceImpl detailsServiceImpl;
+	private final UserDetailsServiceImpl detailsServiceImpl;
 
-   
-	
 	@Bean
 	public PasswordEncoder encoder() {
-		return new BCryptPasswordEncoder(); 
+		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
-		
-		
+
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		
+
 		provider.setPasswordEncoder(encoder());
 		provider.setUserDetailsService(detailsServiceImpl);
 		return provider;
 	}
-	
+
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		
-		 return authConfig.getAuthenticationManager() ;
+
+		return authConfig.getAuthenticationManager();
 	}
-	
-	
+
 	@Bean
-	 public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-		 
-		 httpSecurity.csrf().disable()
-		 .authorizeHttpRequests(auth -> auth
+	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-	                // Public endpoints - koi bhi access kar sake
-	            		.requestMatchers(
-	            			    "/auth/**"
-	            			).permitAll()
+		httpSecurity.csrf().disable().authorizeHttpRequests(auth -> auth
 
-	                // Swagger endpoints
-	                .requestMatchers(
-	                    "/swagger-ui.html",
-	                    "/swagger-ui/**",
-	                    "/v3/api-docs/**"
-	                ).permitAll()
+				// Public endpoints - koi bhi access kar sake
+				.requestMatchers("/auth/**").permitAll()
 
-	                // Actuator endpoints
-	                .requestMatchers(
-	                    "/actuator/**"
-	                ).permitAll()
+				// Swagger endpoints
+				.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-	                // Baaki sab authenticated hona chahiye
-	                .anyRequest().authenticated()
-	            )
+				// Actuator endpoints
+				.requestMatchers("/actuator/**").permitAll().requestMatchers("/product/**").permitAll()
 
-	            // Session Management - STATELESS
-	            .sessionManagement(session -> session
-	                .sessionCreationPolicy(
-	                    SessionCreationPolicy.STATELESS
-	                )
-	            )
+				// Baaki sab authenticated hona chahiye
+				.anyRequest().authenticated())
 
-	            // Authentication Provider set karo
-	            .authenticationProvider(authenticationProvider());
+				// Session Management - STATELESS
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-	       
+				// Authentication Provider set karo
+				.authenticationProvider(authenticationProvider());
 
-		 return httpSecurity.build();
-	 }
+		return httpSecurity.build();
+	}
 
 }
