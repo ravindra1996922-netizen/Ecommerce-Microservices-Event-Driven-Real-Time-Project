@@ -1,0 +1,14 @@
+spring:
+    application:
+        name: config-server
+
+    cloud:
+        config:
+            server:
+                git:
+                    uri: https://github.com/ravindra1996922-netizen/Ecommerce-Microservices-Event-Driven-Real-Time-Project-Config-Server.git
+                    default-label: main
+                    clone-on-start: true
+
+server:
+    port: 8888

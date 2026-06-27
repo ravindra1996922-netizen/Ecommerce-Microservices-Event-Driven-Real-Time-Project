@@ -1,5 +1,13 @@
 package com.productservice.microservices.exception;
 
-public class ExceptionResponse {
+import lombok.Data;
+
+@Data
+public class ExceptionResponse <T>{
+	
+	private String errMsg;
+	private String errCode;
+	T data;
+	
 
 }
