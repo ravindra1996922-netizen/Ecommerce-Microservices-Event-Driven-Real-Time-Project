@@ -29,9 +29,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	@Override
 	public RefreshToken createRefreshToken(Customer customer) {
 
-		if (refreshTokenRepository.existsByUser(customer)) {
+		if (refreshTokenRepository.existsByCustomer(customer)) {
 
-			refreshTokenRepository.deleteByUser(customer);
+			refreshTokenRepository.deleteByCustomer(customer);
 		}
 		RefreshToken refreshToken = RefreshToken.builder().token(UUID.randomUUID().toString())
 				.expiryDate(Instant.now().plusMillis(refreshTokenExpireIn)).customer(customer)
@@ -66,7 +66,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	public void deleteRefreshToken(Customer customer) {
 		// TODO Auto-generated method stub
 
-		refreshTokenRepository.deleteByUser(customer);
+		refreshTokenRepository.deleteByCustomer(customer);
 	}
 
 }

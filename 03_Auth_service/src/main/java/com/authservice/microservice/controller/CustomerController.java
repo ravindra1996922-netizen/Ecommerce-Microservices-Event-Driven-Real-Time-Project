@@ -111,9 +111,10 @@ public class CustomerController {
 		log.info("Refresh token request received");
 
 		CustomerLoginResponse loginResponse = customerService.refreshToken(refreshTokenRequest);
+		
 
-		ApiResponse<CustomerLoginResponse> response = ApiResponse.<CustomerLoginResponse>builder().statusCode(201)
-				.msg("New Access Jwt token from Refresh Token").build();
+		ApiResponse<CustomerLoginResponse> response = ApiResponse.<CustomerLoginResponse>builder().statusCode(201).data(loginResponse).msg("new Jwt Token genrated through refresh token").build();
+				
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

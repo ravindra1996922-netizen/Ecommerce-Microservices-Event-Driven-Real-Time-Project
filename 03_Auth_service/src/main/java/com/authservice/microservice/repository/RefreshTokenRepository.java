@@ -17,14 +17,14 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Inte
 	 Optional<RefreshToken> findByToken(String token);
 
 	   
-	    Optional<RefreshToken> findByUser(Customer customer);
+	    Optional<RefreshToken> findByCustomer(Customer customer);
 
 	    
 	    @Modifying
 	    @Transactional
 	    @Query("DELETE FROM RefreshToken rt WHERE rt.customer = :customer")
-	    void deleteByUser(Customer customer);
+	    void deleteByCustomer(Customer customer);
 
 	 
-	    boolean existsByUser(Customer customer);
+	    boolean existsByCustomer(Customer customer);
 }

@@ -26,6 +26,7 @@ Integer totalAmount;
 
 @OneToMany(mappedBy = "orderEntity", cascade = CascadeType.ALL)
 List<ProductEntity> products= new ArrayList<>();
+
 Date orderPlacedAt;
 String status;
 Date orderUpdatedAt;

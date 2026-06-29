@@ -80,15 +80,17 @@ public class ProductController {
 //=========================================================================================================
 	@PutMapping("/updateProduct")
 	public ResponseEntity<ApiResponse<ProducttDto>> updateProduct(
-			@RequestParam Integer productId, 
-			@RequestParam ProducttDto producttDto,
-			@RequestParam MultipartFile file) {
+			@RequestParam("productId") Integer productId, 
+			@RequestParam ("productDtoJson")String productDtoJson,
+			@RequestParam ("file") MultipartFile file) throws JsonMappingException, JsonProcessingException {
 
-		ProducttDto updateProduct = productService.updateProduct(productId, producttDto, file);
+		ObjectMapper mapper= new ObjectMapper();
+		ProducttDto productDto = mapper.readValue(productDtoJson, ProducttDto.class);
+		ProducttDto updateProduct = productService.updateProduct(productId, productDto, file);
 
 		ApiResponse<ProducttDto> apiResponse = ApiResponse.<ProducttDto>builder().data(updateProduct)
-				.msg("updated succesfully").statusCode(897).build();
-		return new ResponseEntity<ApiResponse<ProducttDto>>(apiResponse, HttpStatus.CREATED);
+				.msg("updated succesfully").statusCode(200).build();
+		return new ResponseEntity<ApiResponse<ProducttDto>>(apiResponse, HttpStatus.OK);
 	}
 //================================================================================================
 
@@ -104,8 +106,10 @@ public class ProductController {
 //=========================================================================================================
 
 	@GetMapping("/getProductByCategory")
-	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> getProductBycategory(@RequestParam Integer pageNum, @RequestParam Integer size,
-			Integer categoryId) {
+	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> getProductBycategory(
+			@RequestParam Integer pageNum,
+			@RequestParam Integer size,
+			@RequestParam Integer categoryId) {
 
 		PageResponseDto<ProducttDto> productBycategory = productService.getProductBycategory(pageNum, size, categoryId);
 

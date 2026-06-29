@@ -3,7 +3,6 @@ package com.productservice.microservices.serviceImpl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -132,9 +131,6 @@ public class ProductServiceImpl implements ProductService {
 			productEntity.setQuantity(producttDto.getQuantity());
 		}
 		try {
-
-			awsService.deleteFileFromS3Bucket(productEntity.getImageUrl());
-
 			String imageUrl = awsService.saveFileInS3Bucket(file);
 			productEntity.setImageUrl(imageUrl);
 		} catch (Exception e) {

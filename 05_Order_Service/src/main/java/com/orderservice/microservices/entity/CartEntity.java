@@ -19,7 +19,6 @@ public class CartEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Integer id;
 	Integer customerID;
-	Date orderPlacedAt;
 	String productId;
 	Double productPrice;
 	Integer productQuantity;

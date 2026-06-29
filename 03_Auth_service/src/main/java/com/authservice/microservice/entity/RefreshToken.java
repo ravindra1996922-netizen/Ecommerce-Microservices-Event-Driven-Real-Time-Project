@@ -36,7 +36,7 @@ public class RefreshToken {
 	private Instant expiryDate;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", referencedColumnName = "userId")
+	@JoinColumn(name = "Customer_id", referencedColumnName = "customerId")
 	private Customer customer;
 
 }
