@@ -49,7 +49,7 @@ public class ProductEntity {
 	@Column(nullable = false)
 	String description;
 	
-	String rating;
+	Integer rating;
 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
