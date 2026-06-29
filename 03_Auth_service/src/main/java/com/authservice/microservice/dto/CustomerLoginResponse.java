@@ -12,8 +12,9 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class CustomerLoginResponse {
-	
-	String token;
-	CustomerInfoDto customerInfoDto;
+
+	private String token;
+	private String refreshToken;
+	private CustomerInfoDto customerInfoDto;
 
 }
