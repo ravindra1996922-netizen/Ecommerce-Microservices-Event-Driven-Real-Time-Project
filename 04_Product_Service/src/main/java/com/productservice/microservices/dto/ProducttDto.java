@@ -1,7 +1,5 @@
 package com.productservice.microservices.dto;
 
-import java.util.Locale.Category;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

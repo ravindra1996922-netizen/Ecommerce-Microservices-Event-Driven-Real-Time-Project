@@ -22,4 +22,6 @@ public interface ProductService {
 	public PageResponseDto<ProducttDto> searchProduct(Integer pageNum, Integer size,String search);
 
 	public PageResponseDto<ProducttDto> getProductBycategory(Integer pageNum, Integer size, Integer categoryId);
+	
+	public ProducttDto getProductById(Integer id) ;
 }

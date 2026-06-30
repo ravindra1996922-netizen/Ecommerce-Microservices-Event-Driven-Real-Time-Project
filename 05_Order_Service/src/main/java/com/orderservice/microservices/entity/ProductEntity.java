@@ -13,7 +13,7 @@ public class ProductEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Integer id;
-	String productId;
+	Integer productId;
 	Double productPrice;
 	Integer productQuantity;
 	@ManyToOne

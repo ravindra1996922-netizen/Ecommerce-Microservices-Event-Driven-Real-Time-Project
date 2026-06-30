@@ -187,6 +187,20 @@ public class ProductServiceImpl implements ProductService {
 				.totalPages(productPage.getTotalPages()).firstPage(productPage.isFirst()).lastPage(productPage.isLast())
 				.data(list).build();
 
-	}
+	}// =============================================================================
 
+	public ProducttDto getProductById(Integer id) {
+
+		Optional<ProductEntity> optional = productRepository.findById(id);
+		
+
+		if (optional.isEmpty()) {
+
+			throw new ProductServiceException("product not found", HttpStatus.NOT_FOUND);
+		}
+		ProductEntity productEntity = optional.get();
+		System.out.println(productEntity+"   = product  entity ");
+
+		return productMapper.convertIntoProductDto(productEntity);
+	}
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import com.productservice.microservices.dto.ProducttDto;
 import com.productservice.microservices.reponse.ApiResponse;
 import com.productservice.microservices.service.ProductService;
 
+import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,11 +48,23 @@ public class ProductController {
 
 	}
 
+//===============================================================================================
+	@GetMapping("/getproductbyId/{productId}")
+	public ResponseEntity<ApiResponse<ProducttDto>> getProductById(@PathVariable("productId") Integer productId) {
+
+		ProducttDto producttDto = productService.getProductById(productId);
+
+		ApiResponse<ProducttDto> apiResponse = ApiResponse.<ProducttDto>builder().data(producttDto)
+				.msg("found sucessFully").statusCode(200).build();
+
+		return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+	}
+
 //==================================================================================================
 	@GetMapping("/getAllProducts")
 	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> getAllProducts(
-			@RequestParam(defaultValue = "0") Integer pageNum,
-			@RequestParam(defaultValue = "10") Integer pageSize,
+			@RequestParam(defaultValue = "0") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize,
 			@RequestParam(defaultValue = "productId") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortDir) {
 
@@ -65,10 +79,8 @@ public class ProductController {
 //==================================================================================================
 
 	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> searchProduct(
-			@RequestParam Integer pageNum,
-			@RequestParam Integer size,
-			@RequestParam String productName) {
+	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> searchProduct(@RequestParam Integer pageNum,
+			@RequestParam Integer size, @RequestParam String productName) {
 
 		log.info(productName + " search product controller");
 		PageResponseDto<ProducttDto> searchProduct = productService.searchProduct(pageNum, size, productName);
@@ -79,12 +91,11 @@ public class ProductController {
 
 //=========================================================================================================
 	@PutMapping("/updateProduct")
-	public ResponseEntity<ApiResponse<ProducttDto>> updateProduct(
-			@RequestParam("productId") Integer productId, 
-			@RequestParam ("productDtoJson")String productDtoJson,
-			@RequestParam ("file") MultipartFile file) throws JsonMappingException, JsonProcessingException {
+	public ResponseEntity<ApiResponse<ProducttDto>> updateProduct(@RequestParam("productId") Integer productId,
+			@RequestParam("productDtoJson") String productDtoJson, @RequestParam("file") MultipartFile file)
+			throws JsonMappingException, JsonProcessingException {
 
-		ObjectMapper mapper= new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		ProducttDto productDto = mapper.readValue(productDtoJson, ProducttDto.class);
 		ProducttDto updateProduct = productService.updateProduct(productId, productDto, file);
 
@@ -106,10 +117,8 @@ public class ProductController {
 //=========================================================================================================
 
 	@GetMapping("/getProductByCategory")
-	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> getProductBycategory(
-			@RequestParam Integer pageNum,
-			@RequestParam Integer size,
-			@RequestParam Integer categoryId) {
+	public ResponseEntity<ApiResponse<PageResponseDto<ProducttDto>>> getProductBycategory(@RequestParam Integer pageNum,
+			@RequestParam Integer size, @RequestParam Integer categoryId) {
 
 		PageResponseDto<ProducttDto> productBycategory = productService.getProductBycategory(pageNum, size, categoryId);
 
