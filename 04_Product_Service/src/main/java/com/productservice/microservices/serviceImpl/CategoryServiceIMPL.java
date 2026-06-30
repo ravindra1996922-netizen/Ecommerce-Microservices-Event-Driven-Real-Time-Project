@@ -26,13 +26,14 @@ public class CategoryServiceIMPL implements CategoryService {
 	@Override
 	public CategoryDto addCategory(CategoryDto categoryDto) {
 
-		if (categoryRepository.existsByCategoryName(categoryDto.getCategory())) {
+		if (categoryRepository.existsByCategoryName(categoryDto.getCategoryName())) {
 
 			throw new ProductServiceException("Category Already Exist", HttpStatus.CONFLICT);
 		}
 		CategoryEntity category = categoryMapper.toEntity(categoryDto);
 
 		CategoryEntity savedCategory = categoryRepository.save(category);
+		log.info(savedCategory+"  cat");
 
 		return categoryMapper.toDTO(savedCategory);
 	}
@@ -43,7 +44,7 @@ public class CategoryServiceIMPL implements CategoryService {
 		CategoryEntity existingCategory = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ProductServiceException("categoryId Not  incorrect", HttpStatus.BAD_REQUEST));
 
-		existingCategory.setCategoryName(categoryDto.getCategory());
+		existingCategory.setCategoryName(categoryDto.getCategoryName());
 
 		CategoryEntity updatedCategory = categoryRepository.save(existingCategory);
 

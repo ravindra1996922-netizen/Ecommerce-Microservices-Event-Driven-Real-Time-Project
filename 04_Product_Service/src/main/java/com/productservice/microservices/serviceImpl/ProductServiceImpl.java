@@ -131,8 +131,9 @@ public class ProductServiceImpl implements ProductService {
 			productEntity.setQuantity(producttDto.getQuantity());
 		}
 		try {
+			if(file!=null) {
 			String imageUrl = awsService.saveFileInS3Bucket(file);
-			productEntity.setImageUrl(imageUrl);
+			productEntity.setImageUrl(imageUrl);}
 		} catch (Exception e) {
 
 			throw new ProductServiceException("file not saved in AWS", HttpStatus.BAD_GATEWAY);

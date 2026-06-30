@@ -164,6 +164,10 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public void logout(String email) {
 		// TODO Auto-generated method stub
+		
+		if(email==null) {
+			throw new AuthServiceExecption("username required to logout ", HttpStatus.BAD_REQUEST, "JWTTOKEN REQUIRED");
+		}
 
 		Customer customer = customerRepo.findByEmail(email);
 

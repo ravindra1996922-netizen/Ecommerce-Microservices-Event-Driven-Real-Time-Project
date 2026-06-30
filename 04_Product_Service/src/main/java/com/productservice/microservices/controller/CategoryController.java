@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.productservice.microservices.config.ConfigClass;
 import com.productservice.microservices.dto.CategoryDto;
 import com.productservice.microservices.reponse.ApiResponse;
 import com.productservice.microservices.service.CategoryService;

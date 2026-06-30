@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@RequestMapping("/product") 
 @RequiredArgsConstructor
 @Slf4j
 public class ProductController {
@@ -92,7 +94,7 @@ public class ProductController {
 //=========================================================================================================
 	@PutMapping("/updateProduct")
 	public ResponseEntity<ApiResponse<ProducttDto>> updateProduct(@RequestParam("productId") Integer productId,
-			@RequestParam("productDtoJson") String productDtoJson, @RequestParam("file") MultipartFile file)
+			@RequestParam("productDtoJson") String productDtoJson, @RequestParam(required = false,name = "file") MultipartFile file)
 			throws JsonMappingException, JsonProcessingException {
 
 		ObjectMapper mapper = new ObjectMapper();

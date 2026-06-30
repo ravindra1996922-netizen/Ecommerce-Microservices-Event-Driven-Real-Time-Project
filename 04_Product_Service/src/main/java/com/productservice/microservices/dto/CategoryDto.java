@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoryDto {
 
-	@NotNull
-	Integer categoryId;
+	
+	
 	@NotBlank
-	String category;
+	String categoryName;
 	
 	
 }

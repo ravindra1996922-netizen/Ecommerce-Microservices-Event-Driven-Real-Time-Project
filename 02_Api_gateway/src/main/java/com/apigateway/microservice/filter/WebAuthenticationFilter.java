@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,54 +26,62 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class WebAuthenticationFilter implements WebFilter {
-	
-	
 
-	private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		
-		log.info("WebAuthenticationFilter running");
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
-		ServerHttpRequest request = exchange.getRequest();
-		HttpHeaders headers = request.getHeaders();
-		String bearerToken = headers.getFirst(HttpHeaders.AUTHORIZATION);
+        log.info("WebAuthenticationFilter running");
 
-		log.info(bearerToken+" ====token");
-		log.info(headers+"   ===header");
-		if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-			
-			return chain.filter(exchange);
-		}
-		String token = bearerToken.substring(7);
+        ServerHttpRequest request = exchange.getRequest();
+        HttpHeaders headers = request.getHeaders();
+        String bearerToken = headers.getFirst(HttpHeaders.AUTHORIZATION);
 
-		Boolean tokenValid = jwtUtil.isTokenValid(token);
+        log.info(bearerToken + " ====token");
+        log.info(headers + "   ===header");
 
-		if (!tokenValid) {
-			return chain.filter(exchange);
-		}
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            return chain.filter(exchange);
+        }
 
-		String email = jwtUtil.extractUsername(token);
-		List<String> roles = jwtUtil.exrtactRoles(token);
-		Integer userId = jwtUtil.extractUserId(token);
+        String token = bearerToken.substring(7);
+        Boolean tokenValid = jwtUtil.isTokenValid(token);
 
-		List<SimpleGrantedAuthority> authorities = roles.stream()
-				.map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toList());
+        if (!tokenValid) {
+            log.warn("Invalid or expired token");
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
+        }
 
-		try {
-			Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
-			ServerHttpRequest modifiedRequest = request.mutate().header("X-email", email)
-					.header("X-CustomerId", String.valueOf(userId)).header("X-roles", String.join(",", roles)).build();
+        String email = jwtUtil.extractUsername(token);
+        List<String> roles = jwtUtil.exrtactRoles(token);
+        Integer userId = jwtUtil.extractUserId(token);
 
-			return chain.filter(exchange.mutate().request(modifiedRequest).build())
-					.contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
-		} catch (Exception e) {
-			e.getMessage();
-		}
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
 
-		return null;
-		
-	}
+        try {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    email, null, authorities);
 
+            ServerHttpRequest modifiedRequest = request.mutate()
+                    .header("X-email", email)
+                    .header("X-CustomerId", String.valueOf(userId))
+                    .header("X-roles", String.join(",", roles))
+                    .build();
+
+            return chain.filter(exchange.mutate().request(modifiedRequest).build())
+                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+
+        } catch (Exception e) {
+            log.error("Error processing JWT token: {}", e.getMessage());
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
+        }
+    }
 }
+

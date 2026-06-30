@@ -33,13 +33,16 @@ public class SecurityConfig {
 		httpSecurity.addFilterAfter(authenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
 				.authorizeExchange(req -> req.pathMatchers("/auth/**").permitAll()
 
-						.pathMatchers(HttpMethod.GET, "/product/**").permitAll()
+						.pathMatchers(HttpMethod.GET, "/product/**").hasAnyRole("CUSTOMER", "STORE_OWNER")
+
 						.pathMatchers(HttpMethod.POST, "/product/**").hasRole("STORE_OWNER")
-						.pathMatchers(HttpMethod.PUT, "/product/**").hasRole("DELIVERY").anyExchange().authenticated());
-		
-		
+
+						.pathMatchers(HttpMethod.PUT, "/product/**").hasRole("STORE_OWNER")
+
+						.pathMatchers(HttpMethod.DELETE, "/product/**").hasRole("STORE_OWNER")
+
+						.anyExchange().authenticated());
+
 		return httpSecurity.build();
-
 	}
-
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class CustomerController {
 	private final CustomerService customerService;
 	private final RoleRepo repo;
 //========================================================================================================================
-	
+
 	@PostMapping("/customer")
 	public ResponseEntity<ApiResponse<CustomerInfoDto>> addCustomer(
 			@Valid @RequestBody CustomerRegisterInfoDto customerRegisterInfoDto) {
@@ -47,7 +48,7 @@ public class CustomerController {
 	}
 
 //========================================================================================================================
-	
+
 	@PostMapping("/deliveryy")
 	public ResponseEntity<ApiResponse<CustomerInfoDto>> adddelivery(
 			@RequestBody CustomerRegisterInfoDto customerRegisterInfoDto) {
@@ -111,18 +112,16 @@ public class CustomerController {
 		log.info("Refresh token request received");
 
 		CustomerLoginResponse loginResponse = customerService.refreshToken(refreshTokenRequest);
-		
 
-		ApiResponse<CustomerLoginResponse> response = ApiResponse.<CustomerLoginResponse>builder().statusCode(201).data(loginResponse).msg("new Jwt Token genrated through refresh token").build();
-				
+		ApiResponse<CustomerLoginResponse> response = ApiResponse.<CustomerLoginResponse>builder().statusCode(201)
+				.data(loginResponse).msg("new Jwt Token genrated through refresh token").build();
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 // ==================================================================================================================
 
 	@PostMapping("/signout")
-	public ResponseEntity<ApiResponse<String>> logout(@RequestParam("email") String email) {
-
+	public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("X-email") String email) {
 
 		customerService.logout(email);
 
