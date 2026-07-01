@@ -9,6 +9,8 @@ import com.orderservice.microservices.response.ApiResponse;
 
 import com.orderservice.microservices.dto.CartItemDto;
 import com.orderservice.microservices.dto.CartRequestDto;
+import com.orderservice.microservices.dto.ProductDto;
+import com.orderservice.microservices.dto.ProductServiceResponseDto;
 import com.orderservice.microservices.entity.CartItemEntity;
 import com.orderservice.microservices.exception.OrderServiceException;
 import com.orderservice.microservices.feignClient.ProductServiceClient;
@@ -35,17 +37,27 @@ public class CartServiceImpl implements CartService {
 
 		Integer productId = cartRequestDto.getProductId();
 
-		ApiResponse<CartItemDto> response = productServiceClient.getProductById(productId);
-		CartItemDto getCartProductDto = response.getData();
+		ProductDto fetchProduct = fetchProduct(productId);
 
-		getCartProductDto.setCustomerId(customerId);
-		getCartProductDto.setProductId(productId);
-		getCartProductDto.setQuantity(cartRequestDto.getProductQuantity());
+		if (fetchProduct.getQuantity() < cartRequestDto.getProductQuantity()) {
 
-		CartItemEntity convertIntoCartEntity = cartMapper.convertIntoCartEntity(getCartProductDto);
+			throw new OrderServiceException("quantity not avialable", HttpStatus.BAD_REQUEST);
+		}
+		CartItemEntity cartItemEntity = cartRepository.findByProductIdAndCustomerId(productId, customerId);
+		
+		
 
-		CartItemEntity saved = cartRepository.save(convertIntoCartEntity);
-		CartItemDto convertIntoCartItemDto = cartMapper.convertIntoCartItemDto(saved);
+//		ApiResponse<CartItemDto> response = productServiceClient.getProductById(productId);
+//		CartItemDto getCartProductDto = response.getData();
+
+//		getCartProductDto.setCustomerId(customerId);
+//		getCartProductDto.setProductId(productId);
+//		getCartProductDto.setQuantity(cartRequestDto.getProductQuantity());
+//
+//		CartItemEntity convertIntoCartEntity = cartMapper.convertIntoCartEntity(getCartProductDto);
+//
+//		CartItemEntity saved = cartRepository.save(convertIntoCartEntity);
+//		CartItemDto convertIntoCartItemDto = cartMapper.convertIntoCartItemDto(saved);
 		return convertIntoCartItemDto;
 	}
 
@@ -120,6 +132,21 @@ public class CartServiceImpl implements CartService {
 		return "deleted successfull";
 
 	}
-	
+
+	private ProductDto fetchProduct(Integer productId) {
+
+		try {
+			ProductServiceResponseDto responseDto = productServiceClient.getProductById(productId);
+			if (responseDto == null || responseDto.getData() == null) {
+				throw new OrderServiceException("Product not found", HttpStatus.NOT_FOUND);
+			}
+
+			return responseDto.getData();
+		} catch (Exception e) {
+
+			throw new OrderServiceException("product service is down", HttpStatus.BAD_GATEWAY);
+		}
+
+	}
 
 }

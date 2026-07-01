@@ -10,7 +10,7 @@ public interface CartRepository extends JpaRepository<CartItemEntity, Integer> {
 
 	List<CartItemEntity> findByCustomerId(Integer customerId);
 
-	CartItemEntity findByProductIdAndCartId(Integer productId, Integer cartId);
+	CartItemEntity findByProductIdAndCustomerId(Integer productId, Integer customerId);
 
 	void deleteByCustomerId(Integer customerId);
 

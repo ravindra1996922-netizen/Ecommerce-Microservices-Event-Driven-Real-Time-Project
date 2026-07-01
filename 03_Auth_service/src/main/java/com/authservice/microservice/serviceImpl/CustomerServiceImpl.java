@@ -133,6 +133,7 @@ public class CustomerServiceImpl implements CustomerService {
 //=======================================================================================================================
 	@Override
 	public CustomerLoginResponse refreshToken(CustomerRefreshTokenRequestDto refreshTokenRequest) {
+		
 		RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenRequest.getRefreshToken());
 		Customer customer = refreshToken.getCustomer();
 
